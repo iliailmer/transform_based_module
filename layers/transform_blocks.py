@@ -73,6 +73,7 @@ class TransformBlock(nn.Module):
     """
     @classmethod
     def get_idx(self, K, l):
+        """Return indices for partial filter usage, see Ulicny et al. 2018."""
         out = []
         for i in range(K):
             for j in range(K):
@@ -82,6 +83,7 @@ class TransformBlock(nn.Module):
 
     @classmethod
     def get_idx_diag(self, K):
+        """Return only diagonal indices for partial filter usage."""
         out = []
         for i in range(K):
             for j in range(K):
@@ -91,7 +93,16 @@ class TransformBlock(nn.Module):
 
     @classmethod
     def draw_filters(self, fb_=None, figsize=(12, 4)):
-        if fb_ is None:
+        """Display visual representation of all filters as a grid.
+
+        Parameters:
+            fb_: any filter bank to display. If `None` is passed,
+                 the default filter bank of the class is shown.
+                 This argument must comply with PyTorch's weight shapes.
+            figsize: a 2-tuple of integers, compatible with `figsize` of
+                 `matplotlib.pyplot`
+        """
+        if not fb_:
             fb_ = self.filter_bank
         fig, ax = plt.subplots(len(fb_), 1, figsize=figsize)
         for i in range(len(fb_)):
@@ -104,13 +115,19 @@ class TransformBlock(nn.Module):
 
     def get_filter_bank(self, kernel_size, input_channels=3,
                         lmbda=None, diag=False, **kwargs):
+        """Build filter bank from a matrix.
+
+           Parameters:
+                :kernel_size: integer, determines sizes of filters.
+                input
+        """
         filter_bank = torch.zeros(
             (kernel_size, kernel_size, kernel_size, kernel_size))
         for i in range(kernel_size):
             for j in range(kernel_size):
                 filter_bank[i, j, :, :] = self.filter_from_matrix(
                     i=i, j=j, size=kernel_size)
-        if lmbda is not None:
+        if lmbda:
             ids = self.get_idx(kernel_size, lmbda)
             return torch.stack(
                 tuple([(filter_bank.view(-1, 1,

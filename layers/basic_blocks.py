@@ -65,7 +65,8 @@ class Bottleneck(nn.Module):
 
 
 class Block(nn.Module):
-    '''Grouped convolution block.'''
+    """Grouped convolution block."""
+
     expansion = 2
 
     def __init__(self, in_planes, cardinality=32,
