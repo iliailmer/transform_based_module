@@ -4,7 +4,9 @@ from torch.nn import functional as F
 
 class HarmonicConv2d(HarmonicBlock):
     def __init__(self, *args, **kwargs):
-        super(HarmonicConv2d, self).__init__(output_channels=1, *args, **kwargs)
+        super(HarmonicConv2d, self).__init__(
+            output_channels=1, *args, **kwargs
+        )
         self.conv = None
         self.bn = None
         self.dropout = None
@@ -44,7 +46,9 @@ class HarmonicConvTranspose2d(HarmonicBlock):
 
 class HadamardConv2d(HadamardBlock):
     def __init__(self, *args, **kwargs):
-        super(HadamardConv2d, self).__init__(output_channels=1, *args, **kwargs)
+        super(HadamardConv2d, self).__init__(
+            output_channels=1, *args, **kwargs
+        )
         self.conv = None
         self.bnorm = None
         self.shortcut = None

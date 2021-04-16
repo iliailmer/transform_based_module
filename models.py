@@ -21,7 +21,9 @@ def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1, **kwargs):
 
 def conv1x1(in_planes, out_planes, stride=1):
     """1x1 convolution"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+    return nn.Conv2d(
+        in_planes, out_planes, kernel_size=1, stride=stride, bias=False
+    )
 
 
 class TransformWRN(nn.Module):
@@ -50,7 +52,9 @@ class TransformWRN(nn.Module):
             out_channels * 2 * widen_factor,
             out_channels * 4 * widen_factor,
         ]
-        assert (depth - 4) % 6 == 0, f"Depth must be 4 (mod 6), got {depth % 6}"
+        assert (
+            depth - 4
+        ) % 6 == 0, f"Depth must be 4 (mod 6), got {depth % 6}"
         if layers is None:
             n = [(depth - 4) // 6] * 4
         else:
@@ -68,7 +72,9 @@ class TransformWRN(nn.Module):
         if not isinstance(block, list):
             block = [block] * 4
         else:
-            assert len(block) == 4, f"Length of block list must be 4, {len(block)}"
+            assert (
+                len(block) == 4
+            ), f"Length of block list must be 4, {len(block)}"
         self.block = block
         if not isinstance(alpha_root, list):
             self.alpha_root = [alpha_root] * 4
@@ -77,7 +83,8 @@ class TransformWRN(nn.Module):
                 self.alpha_root = [alpha_root[0]] * 4
             else:
                 assert len(alpha_root) == 4, (
-                    f"Length of alpha root list must be 4" + f", got {len(alpha_root)}"
+                    "Length of alpha root list must be 4"
+                    + f", got {len(alpha_root)}"
                 )
                 self.alpha_root = alpha_root
 
@@ -88,7 +95,8 @@ class TransformWRN(nn.Module):
                 self.alpha_root = [add_noise[0]] * 4
             else:
                 assert len(add_noise) == 4, (
-                    f"Length of alpha root list must be 4," + f" {len(add_noise)}"
+                    "Length of alpha root list must be 4,"
+                    + f" {len(add_noise)}"
                 )
                 self.add_noise = add_noise
 
@@ -99,7 +107,7 @@ class TransformWRN(nn.Module):
                 kernel_size = [kernel_size[0]] * 4
             else:
                 assert len(kernel_size) == 4, (
-                    f"Length of kernel size list "
+                    "Length of kernel size list "
                     + f"must be 4, got {len(kernel_size)}"
                 )
                 kernel_size = kernel_size
@@ -331,8 +339,15 @@ class TransformResNet(nn.Module):
         diag=False,
     ):
         super(TransformResNet, self).__init__()
-        nChannels = [out_channels, out_channels, out_channels * 2, out_channels * 4]
-        assert (depth - 4) % 6 == 0, f"Depth must be 4 (mod 6), got {depth % 6}"
+        nChannels = [
+            out_channels,
+            out_channels,
+            out_channels * 2,
+            out_channels * 4,
+        ]
+        assert (
+            depth - 4
+        ) % 6 == 0, f"Depth must be 4 (mod 6), got {depth % 6}"
         if layers is None:
             n = [(depth - 4) // 6] * 4
         else:
@@ -350,7 +365,9 @@ class TransformResNet(nn.Module):
         if not isinstance(block, list):
             block = [block] * 4
         else:
-            assert len(block) == 4, f"Length of block list must be 4, {len(block)}"
+            assert (
+                len(block) == 4
+            ), f"Length of block list must be 4, {len(block)}"
         self.block = block
         if not isinstance(alpha_root, list):
             self.alpha_root = [alpha_root] * 4
@@ -359,7 +376,8 @@ class TransformResNet(nn.Module):
                 self.alpha_root = [alpha_root[0]] * 4
             else:
                 assert len(alpha_root) == 4, (
-                    f"Length of alpha root list must be 4" + f", got {len(alpha_root)}"
+                    "Length of alpha root list must be 4"
+                    + f", got {len(alpha_root)}"
                 )
                 self.alpha_root = alpha_root
 
@@ -370,7 +388,8 @@ class TransformResNet(nn.Module):
                 self.alpha_root = [add_noise[0]] * 4
             else:
                 assert len(add_noise) == 4, (
-                    f"Length of alpha root list must be 4" + f", {len(add_noise)}"
+                    "Length of alpha root list must be 4"
+                    + f", {len(add_noise)}"
                 )
                 self.add_noise = add_noise
 
@@ -381,7 +400,8 @@ class TransformResNet(nn.Module):
                 kernel_size = [kernel_size[0]] * 4
             else:
                 assert len(kernel_size) == 4, (
-                    f"Length of kernel size list must be" + f" 4, {len(kernel_size)}"
+                    "Length of kernel size list must be"
+                    + f" 4, {len(kernel_size)}"
                 )
                 kernel_size = kernel_size
         self.kernel_size = kernel_size
@@ -629,7 +649,9 @@ class ResNeXt(nn.Module):
         self.layer2 = self._make_layer(num_blocks[1], transform_conv, 2)
         self.layer3 = self._make_layer(num_blocks[2], transform_conv, 2)
         # self.layer4 = self._make_layer(num_blocks[3], 2)
-        self.linear = nn.Linear(cardinality * bottleneck_width * 8, num_classes)
+        self.linear = nn.Linear(
+            cardinality * bottleneck_width * 8, num_classes
+        )
 
     def _make_layer(self, num_blocks, transform_conv, stride):
         strides = [stride] + [1] * (num_blocks - 1)

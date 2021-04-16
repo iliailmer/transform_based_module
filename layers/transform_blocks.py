@@ -63,7 +63,9 @@ class TransformBlock(nn.Module):
 
         if add_noise:
             self.noise = nn.Parameter(
-                nn.init.normal_(torch.randn(1, self.filter_bank.size(0)), std=1e-4)
+                nn.init.normal_(
+                    torch.randn(1, self.filter_bank.size(0)), std=1e-4
+                )
             )
         else:
             self.noise = None
@@ -131,7 +133,9 @@ class TransformBlock(nn.Module):
              :kernel_size: integer, determines sizes of filters.
              input
         """
-        filter_bank = torch.zeros((kernel_size, kernel_size, kernel_size, kernel_size))
+        filter_bank = torch.zeros(
+            (kernel_size, kernel_size, kernel_size, kernel_size)
+        )
         for i in range(kernel_size):
             for j in range(kernel_size):
                 filter_bank[i, j, :, :] = self.filter_from_matrix(
@@ -141,7 +145,11 @@ class TransformBlock(nn.Module):
             ids = self.get_idx(kernel_size, lmbda)
             return torch.stack(
                 tuple(
-                    [(filter_bank.view(-1, 1, kernel_size, kernel_size))[ids, ...]]
+                    [
+                        (filter_bank.view(-1, 1, kernel_size, kernel_size))[
+                            ids, ...
+                        ]
+                    ]
                     * input_channels
                 ),
                 dim=0,
@@ -150,13 +158,20 @@ class TransformBlock(nn.Module):
             ids = self.get_idx_diag(kernel_size)
             return torch.stack(
                 tuple(
-                    [filter_bank.view(-1, 1, kernel_size, kernel_size)[ids, ...]]
+                    [
+                        filter_bank.view(-1, 1, kernel_size, kernel_size)[
+                            ids, ...
+                        ]
+                    ]
                     * input_channels
                 ),
                 dim=0,
             ).view((-1, 1, kernel_size, kernel_size))
         return torch.stack(
-            tuple([filter_bank.view(-1, 1, kernel_size, kernel_size)] * input_channels),
+            tuple(
+                [filter_bank.view(-1, 1, kernel_size, kernel_size)]
+                * input_channels
+            ),
             dim=0,
         ).view((-1, 1, kernel_size, kernel_size))
 
@@ -312,14 +327,18 @@ class HadamardBlock(TransformBlock):
                 i = 2
                 while i >= 2 and i <= n:
                     P_1 = P_2
-                    P_2 = np.block([[np.kron(P_1, [1, 1])], [np.kron(P_1, [1, -1])]])
+                    P_2 = np.block(
+                        [[np.kron(P_1, [1, 1])], [np.kron(P_1, [1, -1])]]
+                    )
 
                     i += 1
 
             return P_2
 
         if self.walsh:
-            h = hadamard(min(2 ** (size - 1).bit_length(), 1024))  # /np.sqrt(32)
+            h = hadamard(
+                min(2 ** (size - 1).bit_length(), 1024)
+            )  # /np.sqrt(32)
         else:
             h = paley(size)
         f = np.dot(h[i, :size].reshape(-1, 1), h[j, :size].reshape(1, -1))
@@ -387,7 +406,12 @@ class SlantBlock(TransformBlock):
                 1
                 / np.sqrt(2)
                 * np.array(
-                    [[1, 0, 1, 0], [an, bn, -an, bn], [0, 1, 0, -1], [-bn, an, bn, an]]
+                    [
+                        [1, 0, 1, 0],
+                        [an, bn, -an, bn],
+                        [0, 1, 0, -1],
+                        [-bn, an, bn, an],
+                    ]
                 )
             )
 
@@ -437,7 +461,11 @@ class SlantBlock(TransformBlock):
                         ]
                     )
 
-                    S_N = 1 / np.sqrt(2) * np.matmul(S_N, block_diag(S_prev, S_prev))
+                    S_N = (
+                        1
+                        / np.sqrt(2)
+                        * np.matmul(S_N, block_diag(S_prev, S_prev))
+                    )
                     S_prev = S_N
                     i += 1
                 return S_prev
@@ -510,7 +538,10 @@ class ResNextTransofrmBlock(nn.Module):
         )
         self.bn2 = nn.BatchNorm2d(group_width)
         self.conv3 = nn.Conv2d(
-            group_width, self.expansion * group_width, kernel_size=1, bias=False
+            group_width,
+            self.expansion * group_width,
+            kernel_size=1,
+            bias=False,
         )
         self.bn3 = nn.BatchNorm2d(self.expansion * group_width)
         self.shortcut = nn.Sequential()
