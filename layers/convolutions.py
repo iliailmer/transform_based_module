@@ -1,4 +1,4 @@
-from transform_blocks import HarmonicBlock, HadamardBlock, SlantBlock
+from layers.transform_blocks import HarmonicBlock, HadamardBlock, SlantBlock
 from torch.nn import functional as F
 
 

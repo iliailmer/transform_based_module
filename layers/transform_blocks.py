@@ -43,7 +43,7 @@ class TransformBlock(nn.Module):
         # Linear Combination conv
         self.conv = None
         # Shortcut is the downsampling layer. It preserves the input info
-        self.shortcut = nn.Sequential()
+        self.shortcut = nn.Identity()
         # if use_res is False,
         # it is just identity mapping
         if (input_channels != output_channels or stride != 1) and self.use_res:
@@ -83,21 +83,21 @@ class TransformBlock(nn.Module):
     """
 
     @classmethod
-    def get_idx(self, K, l):
+    def get_idx(self, ker: int, lmbda: int):
         """Return indices for partial filter usage, see Ulicny et al. 2018."""
         out = []
-        for i in range(K):
-            for j in range(K):
-                if i + j < l:
-                    out.append(K * i + j)
+        for i in range(ker):
+            for j in range(ker):
+                if i + j < lmbda:
+                    out.append(ker * i + j)
         return tuple(out)
 
     @classmethod
-    def get_idx_diag(self, K):
+    def get_idx_diag(self, ker):
         """Return only diagonal indices for partial filter usage."""
         out = []
-        for i in range(K):
-            for j in range(K):
+        for i in range(ker):
+            for j in range(ker):
                 if i == j:
                     out.append(i + j)
         return tuple(out)
